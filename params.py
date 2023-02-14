@@ -1,6 +1,7 @@
 import casadi as ca
 from casadi import sin, cos, tan, inv
 
+
 class Params(object):
 
     def __init__(self):

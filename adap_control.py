@@ -1,8 +1,6 @@
 import torch
 import torch.nn as nn
 import torch.nn.init as init
-import numpy as np
-
 
 
 torch.manual_seed(0)
@@ -76,10 +74,7 @@ def train_layers(model, optimizer, criterion, inputs, labels):
     for i in range(inputs.size(0)):
         model.train()
         optimizer.zero_grad()
-        print(inputs[i,:])
         output, _ = model(inputs[i,:])
-        print(output)
-        print(labels[i,:])
         loss = criterion(output, labels[i,:])
         loss.backward()
         optimizer.step()

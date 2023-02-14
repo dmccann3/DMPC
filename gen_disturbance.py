@@ -1,6 +1,7 @@
 import numpy as np
 import casadi as ca
 
+
 class GenWind(object):
     def __init__(self):
         self.Vm = 1

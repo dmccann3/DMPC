@@ -1,5 +1,4 @@
 import numpy as np
-import matplotlib.pyplot as plt
 import random as rand
 import casadi as ca
 import torch
@@ -15,6 +14,7 @@ from replay_buffer import Buffer
 from adap_control import DNN
 import adap_control
 import plot
+
 
 def main():
 
@@ -118,7 +118,7 @@ def main():
     print(f'wx: {final_states[-1, 9]}, wy: {final_states[-1, 10]}, wz:{final_states[-1, 11]}')
 
 
-    plot.plot(time, ref_states_and_controls, final_states, final_controls)
+    plot.plot(time, ref_states_and_controls, final_states, final_controls, params.Nsim)
 
 
 

@@ -1,5 +1,6 @@
 import casadi as ca
 
+
 class Init(object):
 
     def __init__(self):

@@ -142,15 +142,6 @@ class ref_MPC(Params):
 
         u = ca.reshape(sol['x'][self.n_states * (self.Nref + 1):], self.n_controls, self.Nref)
         uref = u
-        # w1_tmp = u[0, :]
-        # w1 = ca.horzcat(0, w1_tmp)
-        # w2_tmp = u[0, :]
-        # w2 = ca.horzcat(0, w2_tmp)
-        # w3_tmp = u[0, :]
-        # w3 = ca.horzcat(0, w3_tmp)
-        # w4_tmp = u[0, :]
-        # w4 = ca.horzcat(0, w4_tmp)
-        # uref = ca.vertcat(w1[0,:-1], w2[0,:-1], w3[0,:-1], w4[0,:-1])
         u_ = self.DM2Arr(uref)
 
         X0 = ca.reshape(sol['x'][: self.n_states * (self.Nref + 1)], self.n_states, self.Nref+1)
