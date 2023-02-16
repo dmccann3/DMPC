@@ -4,7 +4,7 @@ import casadi as ca
 
 class GenWind(object):
     def __init__(self):
-        self.Vm = 1
+        self.Vm = 2
         self.dm = 3
         self.rho = 1
 
@@ -35,6 +35,7 @@ class GenWind(object):
             wind = 0*self.Vm*np.ones((m, 1))
         drag = 0.5*self.rho*np.eye(m)@wind**2
         drag_to_return = ca.DM([[drag[0,0]], [drag[1,0]], [drag[2,0]], [drag[3,0]]])
+        
         return drag_to_return
 
 

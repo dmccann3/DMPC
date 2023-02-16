@@ -11,25 +11,25 @@ def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
     ax_posX.plot(time, final_states[:, 0], label='x')
 
     ax_posX.set_ylabel('Position (m)')
-    ax_posX.set_ylim(-2.5, 2.5)
+    # ax_posX.set_ylim(-2.5, 2.5)
     ax_posX.legend()
     ax_posX.grid()
     ax_posY.plot(time, ref_states_and_controls['yref'][:Nsim+1], label='y_ref')
     ax_posY.plot(time, final_states[:,1], label='y')
     
     ax_posY.set_ylabel('Position (m)')
-    ax_posY.set_ylim(-2.5, 2.5)
+    # ax_posY.set_ylim(-2.5, 2.5)
     ax_posY.legend()
     ax_posY.grid()
     ax_posZ.plot(time, ref_states_and_controls['zref'][:Nsim+1], label='z_ref')
     ax_posZ.plot(time, final_states[:, 2], label='z')
     
     ax_posZ.set_ylabel('Position (m)')
-    ax_posZ.set_ylim(0, 2)
+    # ax_posZ.set_ylim(0, 2)
     ax_posZ.legend()
     ax_posZ.grid()
     ax_posZ.set_xlabel('time (s)')
-    # fig.savefig('Plots/ref_test_pos.png')
+    # fig.savefig('Plots/tube_dist_test_pos.png')
     fig.savefig('Plots/dmpc_test_pos.png')
 
 
@@ -38,25 +38,25 @@ def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
     ax_oriX.plot(time, final_states[:, 3], label='phi')
     
     ax_oriX.set_ylabel('Orientation (rad)')
-    ax_oriX.set_ylim(-3.14/2, 3.14/2)
+    # ax_oriX.set_ylim(-3.14/2, 3.14/2)
     ax_oriX.legend()
     ax_oriX.grid()
     ax_oriY.plot(time, ref_states_and_controls['thetaref'][:Nsim+1], label='theta_ref')
     ax_oriY.plot(time, final_states[:, 4], label='theta')
     
     ax_oriY.set_ylabel('Orientation (rad)')
-    ax_oriY.set_ylim(-3.14/2, 3.14/2)
+    # ax_oriY.set_ylim(-3.14/2, 3.14/2)
     ax_oriY.legend()
     ax_oriY.grid()
     ax_oriZ.plot(time, ref_states_and_controls['psiref'][:Nsim+1], label='psi_ref')
     ax_oriZ.plot(time, final_states[:, 5], label='psi')
     
     ax_oriZ.set_ylabel('Orientation (rad)')
-    ax_oriZ.set_ylim(-6.28/2, 6.28/2)
+    # ax_oriZ.set_ylim(-6.28/2, 6.28/2)
     ax_oriZ.legend()
     ax_oriZ.grid()
     ax_oriZ.set_xlabel('time (s)')
-    # fig2.savefig('Plots/ref_test_ori.png')
+    # fig2.savefig('Plots/tube_dist_test_ori.png')
     fig2.savefig('Plots/dmpc_test_ori.png')
 
 
@@ -80,7 +80,7 @@ def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
     ax_velZ.legend()
     ax_velZ.grid()
     ax_velZ.set_xlabel('time (s)')
-    # fig3.savefig('Plots/ref_test_vel.png')
+    # fig3.savefig('Plots/tube_dist_test_vel.png')
     fig3.savefig('Plots/dmpc_test_vel.png')
 
 
@@ -104,7 +104,7 @@ def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
     ax_angZ.legend()
     ax_angZ.grid()
     ax_angZ.set_xlabel('time (s)')
-    # fig4.savefig('Plots/ref_test_ang.png')
+    # fig4.savefig('Plots/tube_dist_test_ang.png')
     fig4.savefig('Plots/dmpc_test_ang.png')
 
 
@@ -123,5 +123,5 @@ def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
     ax_rpm.legend()
     ax_rpm.grid()
     ax_rpm.set_xlabel('time (s)')
-    # fig5.savefig('Plots/ref_test_rpm.png')
+    # fig5.savefig('Plots/tube_dist_test_rpm.png')
     fig5.savefig('Plots/dmpc_test_rpm.png')

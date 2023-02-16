@@ -62,14 +62,12 @@ class DNN(nn.Module):
     def adapt_outer_layer(self, K_a):
         K_a = torch.from_numpy(K_a)
         self.fc7.weight.data = K_a
+        # check this
         # Still not sure if this is totally correct but I think sizes will match up at least
         bias_ = torch.tensor([K_a[0, 0], K_a[0, 1], K_a[0, 2], K_a[0, 3]])
         bias = torch.nn.Parameter(bias_)
         self.fc7.bias = bias
 
-
-# Should probably define all paramters like optimizer criterion etc in CFParams
-# FIXME
 def train_layers(model, optimizer, criterion, inputs, labels):
     for i in range(inputs.size(0)):
         model.train()

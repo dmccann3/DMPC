@@ -9,7 +9,7 @@ class Params(object):
         self.step_horizon = 0.05  # time between steps in seconds
         self.Nref = 200
         self.Ntube = 10      # number of look ahead steps
-        self.Nsim = 150
+        self.Nsim = 190
         self.sim_time = 200  
 
         # state variables
@@ -99,7 +99,7 @@ class Params(object):
         )
 
         # adaptive control network params
-        self.lr = 0.001
+        self.lr = 0.01
         self.gamma = 0.7
         self.input_size = 12
         self.hidden_size = 256
@@ -108,11 +108,11 @@ class Params(object):
         self.batch_size = 32
 
         # buffer params
-        self.buffer_size = 32
+        self.buffer_size = 100
 
         # K_max for weight update of DNN (for now leave as such)
-        self.K_max = 8.0
-        self.freq_ratio = 10
+        self.K_max = 2.0
+        self.freq_ratio = 30
 
 
 

@@ -18,9 +18,15 @@ import plot
 
 def main():
 
-    state_init = Init.initial(Init, x=rand.randint(-2, 2), y=rand.randint(-2, 2), z=0.1)
+    # state_init = Init.initial(Init, x=rand.randint(-2, 2), y=rand.randint(-2, 2), z=0.1)
+    state_init = Init.initial(Init, x=0, y=-1, z=0.1)
     state_target = Init.target(Init, x=0, y=0, z=1)
     t0 = 0
+    print('Starting State')
+    print(f'x: {state_init[0]}, y: {state_init[1]}, z: {state_init[2]}')
+    print(f'phi: {state_init[3]}, theta: {state_init[4]}, psi:{state_init[5]}')
+    print(f'vx: {state_init[6]}, vy: {state_init[7]}, vz:{state_init[8]}')
+    print(f'wx: {state_init[9]}, wy: {state_init[10]}, wz:{state_init[11]}')
 
     # get nominal dynamics
     params = Params()
@@ -75,20 +81,22 @@ def main():
         u_a_tmp = u_a.detach().numpy()
         u_a_DM = ca.DM([[u_a_tmp[0, 0]], [u_a_tmp[0, 1]], [u_a_tmp[0, 2]], [u_a_tmp[0, 3]]])
         u_total = u_mpc + u_a_DM
+        # u_total = u_mpc
 
         # simulate plant 
-        # f_bar_val = f_bar(state_init, u_total)  + params.gox @ (drag) # for sim with tube mpc only
+        # f_val = f_bar(state_init, u_total)  + params.gox @ (drag) # for sim with tube mpc only
         f_val = f_bar(state_init, u_mpc)  + params.gox @ (u_a_DM + drag)
         state_init = ca.DM(state_init + (params.step_horizon *f_val))
         t0 = t0 + params.step_horizon
 
         # update outer layer wieghts
-        delta = (params.gamma * sigma.detach().numpy() * (np.array(drag.full()) + u_a.detach().numpy().T))/(np.linalg.norm(sigma.detach().numpy())**2)
+        delta = (params.gamma * sigma.detach().numpy().T * (np.array(drag.full()) + u_a.detach().numpy().T).T)/(np.linalg.norm(sigma.detach().numpy().T)**2)
         K_a_bar = K_a + delta
 
         # check bounds on K
         if np.linalg.norm(K_a_bar) > params.K_max:
             K_a = (params.K_max / np.linalg.norm(K_a_bar)) * K_a_bar
+            print('Updating K_a with K_max')
         else:
             K_a = K_a_bar
 
@@ -104,14 +112,14 @@ def main():
         
         # train hidden layers
         if i != 0 and i % params.freq_ratio == 0:
-            print('here')
+            print('Training Hidden Layers')
             s, a = buffer.sample_batch(params.batch_size)
             output, losses = adap_control.train_layers(adap_model, optimizer, loss, s, a)
 
 
         print(i)
 
-    print('Final States')
+    print('Final State')
     print(f'x: {final_states[-1, 0]}, y: {final_states[-1, 1]}, z: {final_states[-1, 2]}')
     print(f'phi: {final_states[-1, 3]}, theta: {final_states[-1, 4]}, psi:{final_states[-1, 5]}')
     print(f'vx: {final_states[-1, 6]}, vy: {final_states[-1, 7]}, vz:{final_states[-1, 8]}')
