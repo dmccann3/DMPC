@@ -4,7 +4,7 @@ import casadi as ca
 
 class GenWind(object):
     def __init__(self):
-        self.Vm = 2
+        self.Vm = 1
         self.dm = 3
         self.rho = 1
 
@@ -34,9 +34,12 @@ class GenWind(object):
         else:
             wind = 0*self.Vm*np.ones((m, 1))
         drag = 0.5*self.rho*np.eye(m)@wind**2
-        drag_to_return = ca.DM([[drag[0,0]], [drag[1,0]], [drag[2,0]], [drag[3,0]]])
-        
-        return drag_to_return
+        drag_ = ca.DM([[drag[0,0]], [drag[1,0]], [drag[2,0]], [drag[3,0]]])
+        # noise = np.random.normal(0.0, 1.0, (4,1))
+        # print(noise)
+        # noise_ = ca.DM([[noise[0,0]], [noise[1,0]], [noise[2,0]], [noise[3,0]]])
+        # disturbance = drag_ + noise_
+        return drag_
 
 
     # use to generate wind field to plot (not necessary)

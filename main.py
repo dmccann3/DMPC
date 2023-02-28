@@ -1,5 +1,6 @@
 import numpy as np
 import random as rand
+import time as tim
 import casadi as ca
 import torch
 import torch.nn as nn
@@ -17,9 +18,9 @@ import plot
 
 
 def main():
-
+    t1 = tim.time()
     # state_init = Init.initial(Init, x=rand.randint(-2, 2), y=rand.randint(-2, 2), z=0.1)
-    state_init = Init.initial(Init, x=0, y=-1, z=0.1)
+    state_init = Init.initial(Init, x=-1, y=-1, z=0.1)
     state_target = Init.target(Init, x=0, y=0, z=1)
     t0 = 0
     print('Starting State')
@@ -51,12 +52,15 @@ def main():
     loss = nn.MSELoss()
     K_a = np.zeros(params.output_size)
 
-    # list for storing final set of states and controls
+    # list for storing final set of states and controls (for deep mpc)
     final_states = np.zeros((params.Nsim + 1, 12))
     final_states[0,:] = np.array(state_init.full())[:,0]
     final_controls = np.zeros((params.Nsim, 4))
     time = np.zeros(params.Nsim + 1)
     time[0] = t0
+
+    # list to collect loss
+    loss_list = []
 
     for i in range(params.Nsim):
 
@@ -103,30 +107,38 @@ def main():
         # update outer layer
         adap_model.adapt_outer_layer(-K_a)
 
-        # collect final data
+        # collect final data (deep mpc)
         state = np.array(state_init.full())
         control = np.array(u_total.full())
         final_states[i + 1,:] = state[:,0]
         final_controls[i,:] = control[:,0]
         time[i+1] = t0
-        
+
         # train hidden layers
         if i != 0 and i % params.freq_ratio == 0:
             print('Training Hidden Layers')
             s, a = buffer.sample_batch(params.batch_size)
             output, losses = adap_control.train_layers(adap_model, optimizer, loss, s, a)
+            loss_list.append(losses)
+        
 
 
         print(i)
+    t2 = tim.time()
 
+    print(f'total run time for shallow mpc {t2-t1}')
     print('Final State')
     print(f'x: {final_states[-1, 0]}, y: {final_states[-1, 1]}, z: {final_states[-1, 2]}')
     print(f'phi: {final_states[-1, 3]}, theta: {final_states[-1, 4]}, psi:{final_states[-1, 5]}')
     print(f'vx: {final_states[-1, 6]}, vy: {final_states[-1, 7]}, vz:{final_states[-1, 8]}')
     print(f'wx: {final_states[-1, 9]}, wy: {final_states[-1, 10]}, wz:{final_states[-1, 11]}')
 
+    # np.savetxt('dmpc_state_data.csv', final_states, delimiter=',')
+    # np.savetxt('dmpc_control_data.csv', final_controls, delimiter=',')
+    np.savetxt('shallowmpc_state_data.csv', final_states, delimiter=',')
 
-    plot.plot(time, ref_states_and_controls, final_states, final_controls, params.Nsim)
+
+    plot.plot(time, ref_states_and_controls, final_states, final_controls, params.Nsim, loss_list)
 
 
 

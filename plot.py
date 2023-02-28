@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
 import numpy as np
+import pandas as pd 
 
 
-def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
+def plot(time, ref_states_and_controls, final_states, final_controls, Nsim, loss_list):
 
     # plot results
     # Just starting plots (Need to include comparisons to shallow mpc, regular mpc, and reference governer)
@@ -29,8 +30,8 @@ def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
     ax_posZ.legend()
     ax_posZ.grid()
     ax_posZ.set_xlabel('time (s)')
-    # fig.savefig('Plots/tube_dist_test_pos.png')
-    fig.savefig('Plots/dmpc_test_pos.png')
+    fig.savefig('Plots/tube_dist_test_pos.png')
+    # fig.savefig('Plots/dmpc_test_pos.png')
 
 
     fig2, (ax_oriX, ax_oriY, ax_oriZ) = plt.subplots(3, 1, figsize=(12, 12), sharex=True)
@@ -56,8 +57,8 @@ def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
     ax_oriZ.legend()
     ax_oriZ.grid()
     ax_oriZ.set_xlabel('time (s)')
-    # fig2.savefig('Plots/tube_dist_test_ori.png')
-    fig2.savefig('Plots/dmpc_test_ori.png')
+    fig2.savefig('Plots/tube_dist_test_ori.png')
+    # fig2.savefig('Plots/dmpc_test_ori.png')
 
 
     fig3, (ax_velX, ax_velY, ax_velZ) = plt.subplots(3, 1, figsize=(12, 12), sharex=True)
@@ -80,8 +81,8 @@ def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
     ax_velZ.legend()
     ax_velZ.grid()
     ax_velZ.set_xlabel('time (s)')
-    # fig3.savefig('Plots/tube_dist_test_vel.png')
-    fig3.savefig('Plots/dmpc_test_vel.png')
+    fig3.savefig('Plots/tube_dist_test_vel.png')
+    # fig3.savefig('Plots/dmpc_test_vel.png')
 
 
     fig4, (ax_angX, ax_angY, ax_angZ) = plt.subplots(3, 1, figsize=(12, 12), sharex=True)
@@ -104,8 +105,8 @@ def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
     ax_angZ.legend()
     ax_angZ.grid()
     ax_angZ.set_xlabel('time (s)')
-    # fig4.savefig('Plots/tube_dist_test_ang.png')
-    fig4.savefig('Plots/dmpc_test_ang.png')
+    fig4.savefig('Plots/tube_dist_test_ang.png')
+    # fig4.savefig('Plots/dmpc_test_ang.png')
 
 
     fig5, (ax_rpm) = plt.subplots(1, 1, figsize=(12, 12), sharex=True)
@@ -123,5 +124,95 @@ def plot(time, ref_states_and_controls, final_states, final_controls, Nsim):
     ax_rpm.legend()
     ax_rpm.grid()
     ax_rpm.set_xlabel('time (s)')
-    # fig5.savefig('Plots/tube_dist_test_rpm.png')
-    fig5.savefig('Plots/dmpc_test_rpm.png')
+    fig5.savefig('Plots/tube_dist_test_rpm.png')
+    # fig5.savefig('Plots/dmpc_test_rpm.png')
+
+
+    loss_list2 = []
+    s = []
+    count = 1
+    for i in loss_list:
+        loss_list2.append(i.detach().numpy())
+        s.append(count)
+        count += 1
+    fig6, (loss) = plt.subplots(1, 1, figsize=(8, 8), sharex=True)
+    loss.plot(s, loss_list2, label='loss', linewidth=3)
+    loss.set_title('DMPC MPC Loss', size=18)
+    loss.set_ylabel('MSE Loss', size=18)
+    loss.legend()
+    loss.grid()
+    loss.set_xlabel('Hidden Layer Training Interval', size=18)
+    fig6.savefig('Plots/dmpc_test_loss.png')
+
+
+    plt.rcParams["font.family"] = "arial"
+    dmpc_state_data = pd.read_csv('dmpc_state_data.csv').to_numpy()
+    tmpc_state_data = pd.read_csv('tubempc_state_data.csv').to_numpy()
+    smpc_state_data = pd.read_csv('shallowmpc_state_data.csv').to_numpy()
+    fig7, (x, y, z) = plt.subplots(3, 1, figsize=(12, 12), sharex=True)
+    x.plot(time[:-1], dmpc_state_data[:,0], label='Deep MPC', linewidth=4)
+    # x.plot(time[:-1], tmpc_state_data[:,0], '--', label='Tube MPC', linewidth=4) 
+    x.plot(time[:-1], smpc_state_data[:,0], '--', label='Shallow MPC', linewidth=4, color='green')
+    # x.set_title('DMPC vs. TubeMPC Performance (Position)', size=20)
+    x.set_title('DMPC vs. ShallowMPC Performance (Position)', size=20)
+    x.set_ylabel('X Position (m)', size=20)
+    x.tick_params('y', labelsize=15)
+    x.legend()
+    x.grid()
+    x.set_xlabel('time (s)', size=20)
+    y.plot(time[:-1], dmpc_state_data[:,1], label='Deep MPC', linewidth=4)
+    # y.plot(time[:-1], tmpc_state_data[:,1], '--', label='Tube MPC', linewidth=4)
+    y.plot(time[:-1], smpc_state_data[:,1], '--', label='Shallow MPC', linewidth=4, color='green')
+    y.set_ylabel('Y Position (m)', size=20)
+    y.tick_params('y', labelsize=15)
+    y.legend()
+    y.grid()
+    y.set_xlabel('time (s)', size=20)
+    z.plot(time[:-1], dmpc_state_data[:,2], label='Deep MPC', linewidth=4)
+    # z.plot(time[:-1], tmpc_state_data[:,2], '--', label='Tube MPC', linewidth=4) 
+    z.plot(time[:-1], smpc_state_data[:,2], '--', label='Shallow MPC', linewidth=4, color='green') 
+    z.set_ylabel('Z Position (m)', size=20)
+    z.tick_params('both', labelsize=15)
+    z.legend()
+    z.grid()
+    z.set_xlabel('time (s)', size=20)
+    fig7.savefig('Plots/dmpc_v_shallow.png')
+
+    fig8, (phi, theta, psi) = plt.subplots(3, 1, figsize=(12, 12), sharex=True)
+    phi.plot(time[:-1], dmpc_state_data[:,3], label='Deep MPC', linewidth=4)
+    # phi.plot(time[:-1], tmpc_state_data[:,3], '--', label='Tube MPC', linewidth=4) 
+    phi.plot(time[:-1], smpc_state_data[:,3], '--', label='Shallow MPC', linewidth=4, color='green')
+    # phi.set_title('DMPC vs. TubeMPC Performance (Orientation)', size=20)
+    phi.set_title('DMPC vs. ShallowMPC Performance (Orientation)', size=20)
+    phi.set_ylabel('Phi (rad)', size=20)
+    phi.tick_params('y', labelsize=15)
+    phi.legend()
+    phi.grid()
+    phi.set_xlabel('time (s)', size=20)
+    theta.plot(time[:-1], dmpc_state_data[:,4], label='Deep MPC', linewidth=4)
+    # theta.plot(time[:-1], tmpc_state_data[:,4], '--', label='Tube MPC', linewidth=4) 
+    theta.plot(time[:-1], smpc_state_data[:,4], '--', label='Shallow MPC', linewidth=4, color='green') 
+    theta.set_ylabel('Theta (rad)', size=20)
+    theta.tick_params('y', labelsize=15)
+    theta.legend()
+    theta.grid()
+    theta.set_xlabel('time (s)', size=20)
+    psi.plot(time[:-1], dmpc_state_data[:,5], label='Deep MPC', linewidth=4)
+    # psi.plot(time[:-1], tmpc_state_data[:,5], '--', label='Tube MPC', linewidth=4) 
+    psi.plot(time[:-1], smpc_state_data[:,5], '--', label='Shallow MPC', linewidth=4, color='green') 
+    psi.set_ylabel('Psi (rad)', size=20)
+    psi.tick_params('both', labelsize=15)
+    psi.legend()
+    psi.grid()
+    psi.set_xlabel('time (s)', size=20)
+    fig8.savefig('Plots/dmpc_v_shallow_ori.png')
+
+
+
+
+
+    
+    
+
+
+    
