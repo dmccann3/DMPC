@@ -1,5 +1,6 @@
 import numpy as np
 import casadi as ca
+from casadi import sin
 
 
 class GenWind(object):
@@ -64,3 +65,24 @@ class GenWind(object):
                 x_vel[i, j] = wind[3, 0]
 
         return x_vel, y_vel, z_vel, x, y, z
+
+
+
+class MassDist(object):
+
+    def __init__(self):
+        pass
+
+    def disturb(self, full_state):
+
+        x = full_state[0]
+        y = full_state[1]
+        z = full_state[2]
+        pos = np.zeros((3, 1))
+        pos[0,0] = x
+        pos[1,0] = y
+        pos[2,0] = z
+
+        h = ca.DM([[1/sin(np.linalg.norm(pos) + 15)], [1/sin(np.linalg.norm(pos) + 15)], [1/sin(np.linalg.norm(pos) + 15)], [1/sin(np.linalg.norm(pos) + 15)]])
+        
+        return h

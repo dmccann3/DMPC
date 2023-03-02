@@ -11,8 +11,10 @@ from params import Params
 from ref_mpc import ref_MPC
 from tube_mpc import tube_MPC
 from gen_disturbance import GenWind
+from gen_disturbance import MassDist
 from replay_buffer import Buffer
-from adap_control import DNN
+# from adap_control import DNN
+from adap_control_shallow import DNN
 import adap_control
 import plot
 
@@ -40,14 +42,15 @@ def main():
     # create tube_mpc and build solver
     tube_mpc = tube_MPC()
 
-    # create wind model 
+    # create disturbance model 
     wind_model = GenWind()
+    dist = MassDist()
 
     # create buffer instance
     buffer = Buffer(params.buffer_size)
 
     # create adaptive network
-    adap_model = DNN(params.input_size, params.hidden_size, params.last_hidden_size, params.output_size)
+    adap_model = DNN(params.input_size, params.hidden_size, params.last_hidden_size, params.output_size) # Using shallow NN here (currently working better than deep)
     optimizer = optim.SGD(adap_model.parameters(), params.lr)
     loss = nn.MSELoss()
     K_a = np.zeros(params.output_size)
@@ -65,7 +68,8 @@ def main():
     for i in range(params.Nsim):
 
         # generate disturbance (for simulation)
-        drag = wind_model.generate_wind(state_init)
+        # drag = wind_model.generate_wind(state_init)
+        h = dist.disturb(state_init)
 
         # solve adaptive control
         input = torch.from_numpy(np.array(state_init.full())).T
@@ -88,13 +92,13 @@ def main():
         # u_total = u_mpc
 
         # simulate plant 
-        # f_val = f_bar(state_init, u_total)  + params.gox @ (drag) # for sim with tube mpc only
-        f_val = f_bar(state_init, u_mpc)  + params.gox @ (u_a_DM + drag)
+        # f_val = f_bar(state_init, u_total)  + params.gox @ (h) # for sim with tube mpc only
+        f_val = f_bar(state_init, u_mpc)  + params.gox @ (u_a_DM + h)
         state_init = ca.DM(state_init + (params.step_horizon *f_val))
         t0 = t0 + params.step_horizon
 
         # update outer layer wieghts
-        delta = (params.gamma * sigma.detach().numpy().T * (np.array(drag.full()) + u_a.detach().numpy().T).T)/(np.linalg.norm(sigma.detach().numpy().T)**2)
+        delta = (params.gamma * sigma.detach().numpy().T * (np.array(h.full()) + u_a.detach().numpy().T).T)/(np.linalg.norm(sigma.detach().numpy().T)**2)
         K_a_bar = K_a + delta
 
         # check bounds on K
@@ -133,9 +137,9 @@ def main():
     print(f'vx: {final_states[-1, 6]}, vy: {final_states[-1, 7]}, vz:{final_states[-1, 8]}')
     print(f'wx: {final_states[-1, 9]}, wy: {final_states[-1, 10]}, wz:{final_states[-1, 11]}')
 
-    # np.savetxt('dmpc_state_data.csv', final_states, delimiter=',')
-    # np.savetxt('dmpc_control_data.csv', final_controls, delimiter=',')
-    np.savetxt('shallowmpc_state_data.csv', final_states, delimiter=',')
+    
+    np.savetxt('Data/mass_dist.csv', final_states, delimiter=',')
+    # np.savetxt('Data/tubempc_state_data.csv', final_states, delimiter=',')
 
 
     plot.plot(time, ref_states_and_controls, final_states, final_controls, params.Nsim, loss_list)

@@ -99,20 +99,29 @@ class Params(object):
         )
 
         # adaptive control network params
-        self.lr = 0.01
         self.gamma = 0.7
         self.input_size = 12
-        self.hidden_size = 32
         self.last_hidden_size = 4
         self.output_size = 4
         self.batch_size = 32
+
+        # for deep network
+        # self.hidden_size = 32
+        # self.freq_ratio = 30
+        # self.lr = 0.00001
+        # for shallow network
+        self.hidden_size = 128
+        self.freq_ratio = 30
+        self.lr = 0.00001
+        
+        
 
         # buffer params
         self.buffer_size = 100
 
         # K_max for weight update of DNN (for now leave as such)
-        self.K_max = 3.0
-        self.freq_ratio = 30
+        self.K_max = 10.0
+        
 
 
 
