@@ -57,11 +57,14 @@ class ref_MPC(Params):
             st_next_RK4 = st + (self.step_horizon / 6) * (k1 + 2 * k2 + 2 * k3 + k4)
             g = ca.vertcat(g, st_next - st_next_RK4)
 
+        st = self.Xref[:, self.Nref]
+        cost_fn = cost_fn + ((st - self.P[self.n_states:]).T @ Q @ (st - self.P[self.n_states:]))
+
         
         # create bounds on state and control
         lbx = ca.DM.zeros((self.n_states*(self.Nref+1) + self.n_controls*self.Nref, 1))
         ubx = ca.DM.zeros((self.n_states*(self.Nref+1) + self.n_controls*self.Nref, 1))
-        bounds = [(-3, 3), (-3, 3), (0.01, 3), (-pi/3, pi/3), (-pi/3, pi/3), (-pi, pi), (-1000, 1000), (-1000, 1000), (-100, 100), (-pi/3, pi/3), (-pi/3, pi/3), (-pi, pi)]
+        bounds = [(-2, 2), (-2, 2), (0.01, 2), (-pi/3, pi/3), (-pi/3, pi/3), (-pi/2, pi/2), (-20, 20), (-20, 20), (-20, 20), (-pi/3, pi/3), (-pi/3, pi/3), (-pi/2, pi/2)]
         for i, (lower, upper) in enumerate(bounds):
             lbx[i: self.n_states * (self.Nref + 1): self.n_states] = lower
             ubx[i: self.n_states * (self.Nref + 1): self.n_states] = upper

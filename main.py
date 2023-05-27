@@ -22,7 +22,7 @@ import plot
 def main():
     t1 = tim.time()
     # state_init = Init.initial(Init, x=rand.randint(-2, 2), y=rand.randint(-2, 2), z=0.1)
-    state_init = Init.initial(Init, x=-1, y=-1, z=0.1)
+    state_init = Init.initial(Init, x=-0.5, y=-0.5, z=0.1)
     state_target = Init.target(Init, x=0, y=0, z=1)
     t0 = 0
     print('Starting State')
@@ -34,6 +34,8 @@ def main():
     # get nominal dynamics
     params = Params()
     f_bar = params.dynamics()
+    g = params.gox
+    g = np.array(g.full())
 
     # create ref_mpc and make trajectory
     ref_mpc = ref_MPC()
@@ -97,8 +99,12 @@ def main():
         state_init = ca.DM(state_init + (params.step_horizon *f_val))
         t0 = t0 + params.step_horizon
 
-        # update outer layer wieghts
-        delta = (params.gamma * sigma.detach().numpy().T * (np.array(h.full()) + u_a.detach().numpy().T).T)/(np.linalg.norm(sigma.detach().numpy().T)**2)
+        # update outer layer wieghts        
+        denomenator = (np.linalg.norm(sigma.detach().numpy().T)**2)
+        psuedo_inv = np.linalg.inv(g.T @ g) @ g.T
+        uncertain_sum = g @ (np.array(h.full()) + u_a.detach().numpy().T)
+        numerator = psuedo_inv @ uncertain_sum
+        delta = (params.gamma/denomenator) * sigma.detach().numpy().T @ numerator.T
         K_a_bar = K_a + delta
 
         # check bounds on K

@@ -18,6 +18,9 @@ class DNN(nn.Module):
         self.tanh3 = nn.Tanh()
         self.fc4 = nn.Linear(last_hidden_size, num_classes)
 
+        # self.skip1 = nn.Linear(input_size, hidden_size)
+        # self.skip2 = nn.Linear(hidden_size, last_hidden_size)
+
         # initialize weights
         init.xavier_normal_(self.fc1.weight)
         self.fc1.bias.data = torch.randn(hidden_size)
@@ -32,12 +35,15 @@ class DNN(nn.Module):
         self.fc4.requires_grad_(False)
 
     def forward(self, x):
+        # skip1 = self.skip1(x)
+        # skip2 = self.skip2(self.relu2(skip1))
+
         out = self.fc1(x)
         out = self.relu1(out)
         out = self.fc2(out)
         out = self.relu2(out)
         out = self.fc3(out) 
-        out = self.tanh3(out) # FIXME Need to change this when going back to more layers
+        out = self.tanh3(out) 
         sigma = out
         out = self.fc4(out) 
         return out, sigma

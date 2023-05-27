@@ -60,13 +60,13 @@ class tube_MPC(Params):
             g = ca.vertcat(g, st_next - st_next_RK4)
 
         # compute terminal cost and add it to cost function (CAN CHANGE Q HERE IF NEED BE)
-        st = self.Xtube[:, self.Ntube]
-        cost_fn = cost_fn  + ((st - xe).T @ Q @ (st - xe))
+        # st = self.Xtube[:, self.Ntube]
+        # cost_fn = cost_fn  + ((st - xe).T @ Q @ (st - xe))
 
         # constraint bounds (only on control, no constraints on the state)
         lbx = ca.DM.zeros((self.n_states*(self.Ntube+1) + self.n_controls*self.Ntube, 1))
         ubx = ca.DM.zeros((self.n_states*(self.Ntube+1) + self.n_controls*self.Ntube, 1))
-        bounds = [(-3, 3), (-3, 3), (0.01, 3), (-pi/3, pi/3), (-pi/3, pi/3), (-pi, pi), (-1000, 1000), (-1000, 1000), (-100, 100), (-pi/3, pi/3), (-pi/3, pi/3), (-pi, pi)]
+        bounds = [(-2, 2), (-2, 2), (0.01, 2), (-pi/3, pi/3), (-pi/3, pi/3), (-pi/2, pi/2), (-20, 20), (-20, 20), (-20, 20), (-pi/3, pi/3), (-pi/3, pi/3), (-pi/2, pi/2)]
         for i, (lower, upper) in enumerate(bounds):
             lbx[i: self.n_states * (self.Ntube + 1): self.n_states] = lower
             ubx[i: self.n_states * (self.Ntube + 1): self.n_states] = upper

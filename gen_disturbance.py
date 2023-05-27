@@ -83,6 +83,6 @@ class MassDist(object):
         pos[1,0] = y
         pos[2,0] = z
 
-        h = ca.DM([[1/sin(np.linalg.norm(pos) + 15)], [1/sin(np.linalg.norm(pos) + 15)], [1/sin(np.linalg.norm(pos) + 15)], [1/sin(np.linalg.norm(pos) + 15)]])
+        h = ca.DM([[1/sin(np.linalg.norm(pos) )], [1/sin(np.linalg.norm(pos))], [1/sin(np.linalg.norm(pos))], [1/sin(np.linalg.norm(pos))]])
         
         return h

@@ -76,7 +76,7 @@ class Params(object):
 
         # control influence matrix
         self.gox = ca.DM.zeros((12, 4))
-        self.gox[8, :] = (self.kf*self.l)/self.m
+        self.gox[8, :] = (self.kf)/self.m
         self.gox[9, 0] = -(self.kf*self.l)/self.Jxx
         self.gox[9, 1] = -(self.kf*self.l)/self.Jxx
         self.gox[9, 2] = (self.kf*self.l)/self.Jxx
@@ -85,10 +85,10 @@ class Params(object):
         self.gox[10, 1] = (self.kf*self.l)/self.Jyy
         self.gox[10, 2] = (self.kf*self.l)/self.Jyy
         self.gox[10, 3] = -(self.kf*self.l)/self.Jyy
-        self.gox[11, 0] = -(self.kf*self.l)/self.Jzz
-        self.gox[11, 1] = (self.kf*self.l)/self.Jzz
-        self.gox[11, 2] = -(self.kf*self.l)/self.Jzz
-        self.gox[11, 3] = (self.kf*self.l)/self.Jzz
+        self.gox[11, 0] = -(self.km)/self.Jzz
+        self.gox[11, 1] = (self.km)/self.Jzz
+        self.gox[11, 2] = -(self.km)/self.Jzz
+        self.gox[11, 3] = (self.km)/self.Jzz
 
         # control equilibrium (hover speed of rotor krpm)
         self.uref = ca.vertcat(
